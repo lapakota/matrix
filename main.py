@@ -8,8 +8,11 @@ class Matrix:
         self.app = app
         self.FONT_SIZE = font_size
         self.image, self.height, self.width = self.get_image(app.name)
-        self.SIZE = self.ROWS, self.COLS = app.HEIGHT // font_size, app.WIDTH // font_size
-        self.katakana = np.array([chr(int('0x30a0', 16) + i) for i in range(96)] + ['' for i in range(10)])
+        self.ROWS, self.COLS = app.HEIGHT // font_size, app.WIDTH // font_size
+        self.SIZE = self.ROWS, self.COLS
+        self.katakana = (np.array([chr(int('0x30a0', 16) + i) 
+                                   for i in range(96)] 
+                                  + ['' for i in range(10)]))
         self.font = pg.font.Font('MSMincho.ttf', self.FONT_SIZE)
 
         self.matrix = np.random.choice(self.katakana, self.SIZE)
@@ -30,7 +33,9 @@ class Matrix:
         char_colors = [(0, green, 0) for green in range(256)]
         prerendered_chars = {}
         for char in self.katakana:
-            prerendered_char = {(char, color): self.font.render(char, True, color) for color in char_colors}
+            prerendered_char = {(char, color): 
+                                self.font.render(char, True, color) 
+                                for color in char_colors}
             prerendered_chars.update(prerendered_char)
         return prerendered_chars
 
@@ -44,7 +49,8 @@ class Matrix:
         num_cols = np.argwhere(frames % self.cols_speed == 0)
         num_cols = num_cols[:, 1]
         num_cols = np.unique(num_cols)
-        self.matrix[:, num_cols] = np.roll(self.matrix[:, num_cols], shift=1, axis=0)
+        self.matrix[:, num_cols] = np.roll(self.matrix[:, num_cols], 
+                                           shift=1, axis=0)
 
     def change_chars(self, frames):
         mask = np.argwhere(frames % self.char_intervals == 0)
@@ -69,12 +75,15 @@ class Matrix:
 class MatrixVision:
     def __init__(self):
         pg.init()
-        self.name = '2bWIZ8AEAG0.jpg'
+        self.name = 'set.jpg'
         image = Image.open(self.name)
         self.WIDTH, self.HEIGHT = image.size
         if self.WIDTH < 500 or self.HEIGHT < 500:
-            self.WIDTH += 500
-            self.HEIGHT += 500
+            self.WIDTH *= 2
+            self.HEIGHT *= 2
+        if self.WIDTH > 1080 or self.HEIGHT > 1920:
+            self.WIDTH //= 2
+            self.HEIGHT //= 2
         self.RES = self.WIDTH, self.HEIGHT
         self.screen = pg.display.set_mode(self.RES)
         self.surface = pg.Surface(self.RES)
